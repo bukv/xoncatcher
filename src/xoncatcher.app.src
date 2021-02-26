@@ -1,0 +1,21 @@
+{application, xoncatcher,
+   [{description, "irc2telegram bot"},
+    {vsn, "0.0.1"},
+    {registered, []},
+    {mod, {xoncatcher_app, []}},
+    {applications,
+        [kernel,
+         stdlib,
+         cowboy,
+         cowlib,
+         jsx,
+         eirc,
+         ranch
+        ]},
+    {env,[]},
+    {modules, []},
+
+    {licenses, ["Apache 2.0"]},
+    {links, []}
+   ]
+}.
