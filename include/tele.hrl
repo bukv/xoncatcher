@@ -1,6 +1,6 @@
 %% Telegram-bot config
--define(WEBHOOK_ADDRESS, "").               % https://some-address.net
--define(TOKEN_API, "").                     % your bot token API
+-define(WEBHOOK_ADDRESS, "").              % https://some-address.net
+-define(TOKEN_API, "").   % your bot token API
 
 %% API urls
 -define(SEND_MSG_URL, ["https://api.telegram.org/bot","/sendMessage"]).
