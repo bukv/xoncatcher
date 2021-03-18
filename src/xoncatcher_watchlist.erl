@@ -8,35 +8,21 @@
 -include("tele.hrl").
 -include("irc.hrl").
 
-add_to_watchlist_processing(UserId, PlayerNick) ->
-    insert_into_watchlist(UserId, PlayerNick),
-    Message = <<?NICK_ADDED/binary, PlayerNick/binary>>,
+add_to_watchlist_processing(UserId, KeyWord) ->
+    insert_into_watchlist(UserId, KeyWord),
+    Message = <<?NICK_ADDED/binary, KeyWord/binary>>,
     telebot_messages:send_message(UserId, Message).
 
-rm_from_watchlist_processing(UserId, PlayerNick) ->
-    remove_from_watchlist(UserId, PlayerNick),
-    Message = <<?NICK_REMOVED/binary, PlayerNick/binary>>,
+rm_from_watchlist_processing(UserId, KeyWord) ->
+    remove_from_watchlist(UserId, KeyWord),
+    Message = <<?NICK_REMOVED/binary, KeyWord/binary>>,
     telebot_messages:send_message(UserId, Message).
 
-check_message_processing(Text) ->
-    case is_join_or_part_message(Text) of
-        {join,_} ->
-            AllWatchlists = xoncatcher_db:lookup_all_users_and_watchlists(),
-            find_matching_nicknames(?JOIN_MESSAGE, Text, AllWatchlists);
-        {_,part} ->
-            AllWatchlists = xoncatcher_db:lookup_all_users_and_watchlists(),
-            find_matching_nicknames(?PART_MESSAGE, Text, AllWatchlists);
-        {false,false} ->
-            ok
-    end.
-
+check_message_processing(MessageText) ->
+    AllWatchlists = xoncatcher_db:lookup_all_users_and_watchlists(),
+    find_matching_keywords(MessageText, AllWatchlists).
 
 %% Internal functions
-
-is_join_or_part_message(Text) ->
-    Join = is_join_message(Text),
-    Part = is_part_message(Text),
-    {Join,Part}.
 
 insert_into_watchlist(UserId, PlayerNick) ->
     {ok,[UserId, FirstName, OldWatchList, _, _]} = xoncatcher_db:lookup(UserId),
@@ -48,44 +34,28 @@ remove_from_watchlist(UserId, PlayerNick) ->
     NewWatchList = lists:delete(PlayerNick, OldWatchList),
     xoncatcher_db:insert(UserId, FirstName, NewWatchList).
 
-find_matching_nicknames(_MessageType, _Text, []) ->
+find_matching_keywords(_MessageText, []) ->
     ok;
 
-find_matching_nicknames(MessageType, Text, [{UserId,Watchlist} | RestWatchlists]) ->
+find_matching_keywords(MessageText, [{UserId,Watchlist} | RestWatchlists]) ->
     lists:foreach(fun(Elem) ->
-            Pos = string:rstr(Text, binary_to_list(Elem)),
-            case Pos of
-                Pos when is_integer(Pos), Pos =/= 0 ->
-                    telebot_messages:send_message(UserId, <<MessageType/binary, Elem/binary>>);
-                0 ->
-                    false;
-                Err ->
-                    io:format("\n =======> Error find_matching_nicknames: ~p", [Err]),
-                    false
-            end
+        Pos = string:rstr(MessageText, binary_to_list(Elem)),
+        case Pos of
+            Pos when is_integer(Pos), Pos =/= 0 ->
+                BinMessage = message_to_binary(MessageText),
+                telebot_messages:send_message(UserId, BinMessage);
+            0 ->
+                false;
+            Err ->
+                io:format("\n =======> Error find_matching_keywords: ~p", [Err]),
+                false
+        end
                   end, Watchlist),
-    find_matching_nicknames(MessageType, Text, RestWatchlists).
+    find_matching_keywords(MessageText, RestWatchlists).
 
-is_join_message(Text) ->
-    Pos = string:rstr(Text, ?JOIN_IRC_MSG),
-    case Pos of
-        Pos when is_integer(Pos), Pos =/= 0 ->
-            join;
-        0 ->
-            false;
-        Err ->
-            io:format("\n =======> Error is_join_message: ~p", [Err]),
-            false
-    end.
-
-is_part_message(Text) ->
-    Pos = string:rstr(Text, ?PART_IRC_MSG),
-    case Pos of
-        Pos when is_integer(Pos), Pos =/= 0 ->
-            part;
-        0 ->
-            false;
-        Err ->
-            io:format("\n =======> Error is_part_message: ~p", [Err]),
-            false
-    end.
+message_to_binary(MessageText) when is_binary(MessageText) ->
+    MessageText;
+message_to_binary(MessageText) when is_list(MessageText) ->
+    list_to_binary(MessageText);
+message_to_binary(_) ->
+    <<"!!! Failed message, please contact to administrator">>.

@@ -71,7 +71,8 @@ on_text(_, _, "!PART "++Channel, State) ->
     {ok, State};
 on_text(From, To, Text, State) ->
     io:format("TEXT: From (~p) To (~p) - ~p ~n", [From, To, Text]),
-    xoncatcher_srv:check_new_message(Text),
+    FullMessage = string:join(["From:", From, "To:", To, "--", Text], " "),
+    xoncatcher_srv:check_new_message(FullMessage),
     {ok, State}.
 
 %% Triggers when the server sends us a message and not another user
