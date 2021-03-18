@@ -4,6 +4,8 @@ XONCATCHER
 
 Нужные события достаются из лога в IRC канале, связанном с игровым сервером. 
 Так что по сути, это irc2telegram бот.
+
+Пример в работе =====> http://t.me/xoncatcher_bot
 __________________________
 ![example_1.png](https://raw.githubusercontent.com/bukv/xoncatcher/master/screenshots/example_1.png "Bot interface")
 __________________________
