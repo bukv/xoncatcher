@@ -13,12 +13,11 @@
     "/start - getting started \n "
     "/help - information about bot commands \n "
     "/ping - checking connection with the bot \n "
-    "/add_nick NICK - add nick to your watchlist \n "
-    "/rm_nick NICK - remove nick from your watchlist \n "
+    "/add_key KEYWORD - add keyword to your watchlist \n "
+    "/rm_key KEYWORD - remove keyword from your watchlist \n "
+    "/to_irc MESSAGE - send message to irc channel \n"
     "/watchlist - show your watchlist \n "
 >>).
 -define(NICK_ADDED, <<"Added to your watchlist: ">>).
 -define(NICK_REMOVED, <<"Removed from your watchlist: ">>).
--define(JOIN_MESSAGE, <<"+ join: ">>).
--define(PART_MESSAGE, <<"- part: ">>).
 

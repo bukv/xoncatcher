@@ -12,7 +12,8 @@
     add_to_watchlist/2,
     rm_from_watchlist/2,
     check_new_message/1,
-    show_watchlist/1
+    show_watchlist/1,
+    send_message_to_irc/1
 ]).
 
 %% gen_server callbacks
@@ -28,7 +29,7 @@
 -include("tele.hrl").
 -include("irc.hrl").
 
--record(state, {}).
+-record(state, {irc_client}).
 
 stop()  ->
     gen_server:call(?MODULE, stop).
@@ -51,6 +52,9 @@ show_watchlist(UserId) ->
 check_new_message(Message) ->
     gen_server:call(?MODULE, {check_new_message, Message}).
 
+send_message_to_irc(Message) ->
+    gen_server:call(?MODULE, {send_message_to_irc, Message}).
+
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
@@ -58,8 +62,8 @@ init(_Params) ->
     xoncatcher_db:create(),
     xoncatcher_db:start(),
     telebot_starter:set_webhook(),
-    ircbot_starter:start_ircbot(),
-    {ok, #state{}}.
+    {ok, IrcClient} = ircbot_starter:start_ircbot(),
+    {ok, #state{irc_client = IrcClient}}.
 
 handle_call({send_message_to_tele, ChatId, Message}, _From, State) ->
     Reply = telebot_messages:send_message(ChatId, Message),
@@ -84,6 +88,10 @@ handle_call({add_to_watchlist, UserId, PlayerNick}, _From, State) ->
 
 handle_call({check_new_message, Message}, _From, State) ->
     Reply = xoncatcher_watchlist:check_message_processing(Message),
+    {reply, Reply, State};
+
+handle_call({send_message_to_irc, Message}, _From, #state{irc_client = IrcClient} = State) ->
+    Reply = ircbot_messages:send_message_to_channel(IrcClient, Message),
     {reply, Reply, State};
 
 handle_call(stop, _From, Tab) ->

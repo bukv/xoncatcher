@@ -38,13 +38,17 @@ message_processing(#{<<"message">> := #{<<"text">> := <<"/watchlist">>, <<"from"
     UserId = maps:get(<<"id">>, From),
     xoncatcher_srv:show_watchlist(UserId);
 
-message_processing(#{<<"message">> := #{<<"text">> := <<_Head:0/binary, "/add_nick "/utf8, Nick/binary>>, <<"from">> := From}}) ->
+message_processing(#{<<"message">> := #{<<"text">> := <<_Head:0/binary, "/add_key "/utf8, Nick/binary>>, <<"from">> := From}}) ->
     UserId = maps:get(<<"id">>, From),
     xoncatcher_srv:add_to_watchlist(UserId, Nick);
 
-message_processing(#{<<"message">> := #{<<"text">> := <<_Head:0/binary, "/rm_nick "/utf8, Nick/binary>>, <<"from">> := From}}) ->
+message_processing(#{<<"message">> := #{<<"text">> := <<_Head:0/binary, "/rm_key "/utf8, Nick/binary>>, <<"from">> := From}}) ->
     UserId = maps:get(<<"id">>, From),
     xoncatcher_srv:rm_from_watchlist(UserId, Nick);
+
+message_processing(#{<<"message">> := #{<<"text">> := <<_Head:0/binary, "/to_irc "/utf8, BinMessage/binary>>}}) ->
+    Message = binary_to_list(BinMessage),
+    xoncatcher_srv:send_message_to_irc(Message);
 
 message_processing(#{<<"message">> := #{<<"from">> := From}}) ->
     UserId = maps:get(<<"id">>, From),
