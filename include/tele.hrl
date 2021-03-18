@@ -15,7 +15,6 @@
     "/ping - checking connection with the bot \n "
     "/add_key KEYWORD - add keyword to your watchlist \n "
     "/rm_key KEYWORD - remove keyword from your watchlist \n "
-    "/to_irc MESSAGE - send message to irc channel \n"
     "/watchlist - show your watchlist \n "
 >>).
 -define(NICK_ADDED, <<"Added to your watchlist: ">>).
