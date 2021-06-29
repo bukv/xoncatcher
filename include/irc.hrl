@@ -1,9 +1,3 @@
-%% IRC CONFIGURATION
--define(IRC_NETWORK, "irc.quakenet.org"). % irc.quakenet.org
--define(IRC_NETWORK_PORT, 6667).          % 6667
--define(IRC_CHANNEL, "#jeff-xonotic").    % #jeff-xonotic
--define(NICK, "xoncatcher").              % YourNick
-
 -define(VERSION, "Xoncatcher Bot 0.0.1").
 
 %% substr

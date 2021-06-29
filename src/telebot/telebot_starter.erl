@@ -4,10 +4,13 @@
 -export([set_webhook/0]).
 
 -include("tele.hrl").
+-include("xoncatcher.hrl").
 
 set_webhook() ->
-    Url = string:join(?SET_WEBHOOK_URL, ?TOKEN_API),
-    UrlAndParam = Url ++ ?WEBHOOK_ADDRESS,
+    {ok, TeleWebHookAddress} = application:get_env(?APPLICATION, telegram_webhook_address),
+    {ok, TeleTokenApi} = application:get_env(?APPLICATION, telegram_token_api),
+    Url = string:join(?SET_WEBHOOK_URL, TeleTokenApi),
+    UrlAndParam = Url ++ TeleWebHookAddress,
     Result = httpc:request(get, {UrlAndParam, []}, [], []),
     case Result of
         {ok, RespJson} ->

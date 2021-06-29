@@ -39,8 +39,8 @@ lookup(UserId) ->
             end,
     {atomic,Result} = mnesia:transaction(F),
     case Result of
-        [{_Table, UserId, FirstName, WatchList, IsAdmin, Secret}] ->
-            {ok,[UserId, FirstName, WatchList, IsAdmin, Secret]};
+        [{_Table, UserId, FirstName, WatchList, IrcNick, SendAll}] ->
+            {ok,[UserId, FirstName, WatchList, IrcNick, SendAll]};
         _ ->
             {ok,[]}
     end.

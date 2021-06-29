@@ -16,6 +16,9 @@ start(_StartType, _StartArgs) ->
         ]}
     ]),
     {ok, _Pid} = cowboy:start_clear(http, [{port, 3000}], #{env => #{dispatch => Dispatch}}),
+    xoncatcher_db:create(),
+    xoncatcher_db:start(),
+    telebot_starter:set_webhook(),
     xoncatcher_sup:start_link().
 
 stop(_State) ->

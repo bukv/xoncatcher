@@ -2,7 +2,7 @@
     user_id,
     first_name,
     watchlist,
-    is_admin,
-    secret_auth
+    irc_nick,
+    send_all
 }).
 -define(TABLE_USERS, table_users).
